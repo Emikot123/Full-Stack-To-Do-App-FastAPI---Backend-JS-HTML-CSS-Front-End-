@@ -33,7 +33,7 @@ class TaskDoneSchema(BaseModel):
     password: str
     todo_id: int
 
-#Creating Somethins
+#Creating and Updating
 
 @app.post('/users')
 def create_user(user: UserSchema, db: Session = Depends(get_db)):
@@ -84,6 +84,37 @@ def task_done(data: TaskDoneSchema, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(todo)
     return todo
+
+@app.put('/todos')
+def task_false(data: TaskDoneSchema, db: Session = Depends(get_db)):
+    check = db.query(User).filter(
+        data.email == User.email,
+        data.password == User.password).first()
+    if not check:
+        return "ERROR"
+    todo = db.query(Todo).filter(
+    Todo.id == data.todo_id,
+    Todo.user_id == check.id
+    ).first()
+
+    todo.done = False
+    db.commit()
+    db.refresh(todo)
+    return todo
+
+#View
+
+@app.post('/users')
+def get_todos(credentials: LoginSchema, db: Session = Depends(get_db)):
+    user = db.query(User).filter(
+        User.email == credentials.email,
+        User.password == credentials.password
+    ).first()
+    if not user:
+        return "Wrong Email or Password"
+    return db.query(Todo).filter(Todo.user_id == user.id).all()
+
+
 
     
 
