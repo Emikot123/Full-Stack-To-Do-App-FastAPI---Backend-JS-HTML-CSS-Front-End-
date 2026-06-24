@@ -1,0 +1,39 @@
+main{
+    display: none;
+}
+header{
+    text-align: center;
+    color: var(--text);
+    padding: 40px;
+}
+body{
+    background-color: var(--bg);
+}
+
+#login{
+    display: flex;
+    flex-direction: column;
+    margin-right: 1400px;
+    padding: 40px;
+    margin-top: 35px;
+}
+.login_in{
+    color: #E8E8E8;
+    margin-top: 30px;
+    
+}
+#submit{
+    margin-top: 20px;
+    padding: 10px;
+    cursor: pointer;
+}
+::placeholder{
+    color: #1A1A1A;
+}
+
+:root{
+    --bg: #F5F5F0;
+    --text: #1A1A1A;
+    --buttons: #4A90E2;
+    --delete: #E25454;
+}

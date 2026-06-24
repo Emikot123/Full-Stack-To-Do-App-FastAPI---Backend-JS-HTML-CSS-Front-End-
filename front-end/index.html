@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel = "stylesheet" href = "style.css">
+</head>
+<body>
+    <header><h1>Your To-Do</h1></header>
+    <div id = "login">
+        <form>
+            <p>Sign In or Log in</p>
+            
+            <input type="radio" id = "btn_log" name="log_opt" value="val_log">
+            <label for="val_log">Login</label><br>
+
+            <input type="radio" id="btn_sign" name="log_opt" value = "sign_log">
+            <label for="sign_log">Sign In</label><br>
+
+        </form>
+
+
+        <input id = "email" type="email" placeholder="Enter your email" class="login_in">
+        <input id = "password" type="password" placeholder="Enter your password" class="login_in">
+        <button id = "submit">Submit</button>
+    </div>
+    <main>
+        <button id = "new">New Task</button>
+        <input type = "text" id ="task_name">
+        <button id = "delete_task">Delete Task</button>
+    </main>
+    
+    <script src="script.js" defer></script>
+</body>
+</html>
