@@ -24,18 +24,20 @@
         <input id = "email" type="email" placeholder="Enter your email" class="login_in">
         <input id = "password" type="password" placeholder="Enter your password" class="login_in">
         <button id = "submit">Submit</button>
+    
     </div>
     <h1 id = "error">ERROR: Wrong Email or Password</h1>
+    <p>To Delete a task you must choose delete option and write id of your task, the id starts from 1</p>
     <main>
         <div id = "elem_btn">
             <form>
                 <p>Add or Delete</p>
                 
-                <input type="radio" id = "btn_add" name="add_opt" value="add_task">
-                <label for="btn_add">Add</label><br>
+                <input type="radio" id="add_opt" name="task_opt" value="add_task">
+                <label for="add_opt">Add</label><br>
 
-                <input type="radio" id="btn_del" name="del_opt" value = "del_task">
-                <label for="btn_del">Delete</label><br>
+                <input type="radio" id="del_opt" name="task_opt" value="del_task">
+                <label for="del_opt">Delete</label><br>
 
             </form>
         </div>
@@ -43,7 +45,9 @@
         <button id = 'task_sub'>Submit</button>
         
     </main>
-    
+    <div id = "tasks">
+        
+    </div>
     <script src="script.js" defer></script>
 </body>
 </html>

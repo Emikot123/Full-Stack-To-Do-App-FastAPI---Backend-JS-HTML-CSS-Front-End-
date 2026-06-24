@@ -7,6 +7,12 @@
     background-color: #DDEB9D;
 }
 
+#task_sub{
+    margin-right: 1650px;
+    margin-top: 40px;
+    background-color: #DDEB9D;
+}
+
 #delete_task{
     background-color: var(--delete);
 }
@@ -61,3 +67,4 @@ body{
     --buttons: #4A90E2;
     --delete: #E25454;
 }
+

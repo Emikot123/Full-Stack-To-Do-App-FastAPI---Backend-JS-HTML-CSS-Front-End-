@@ -72,7 +72,7 @@ def add_task(todo: ToDoSchema, db: Session = Depends(get_db)):
     db.refresh(new_todo)
     return new_todo
 
-@app.put('/todos')
+@app.put('/todos/done')
 def task_done(data: TaskDoneSchema, db: Session = Depends(get_db)):
     check = db.query(User).filter(
         data.email == User.email,
@@ -89,7 +89,7 @@ def task_done(data: TaskDoneSchema, db: Session = Depends(get_db)):
     db.refresh(todo)
     return todo
 
-@app.put('/todos')
+@app.put('/todos/undone')
 def task_false(data: TaskDoneSchema, db: Session = Depends(get_db)):
     check = db.query(User).filter(
         data.email == User.email,
