@@ -33,6 +33,10 @@ class TaskDoneSchema(BaseModel):
     password: str
     todo_id: int
 
+class DeleteTodoSchema(BaseModel):
+    email: str
+    password: str
+    todo_id: int
 #Creating and Updating
 
 @app.post('/users')
@@ -104,7 +108,7 @@ def task_false(data: TaskDoneSchema, db: Session = Depends(get_db)):
 
 #View
 
-@app.post('/users')
+@app.post('/todos/get')
 def get_todos(credentials: LoginSchema, db: Session = Depends(get_db)):
     user = db.query(User).filter(
         User.email == credentials.email,
@@ -113,6 +117,28 @@ def get_todos(credentials: LoginSchema, db: Session = Depends(get_db)):
     if not user:
         return "Wrong Email or Password"
     return db.query(Todo).filter(Todo.user_id == user.id).all()
+
+
+#Delete Tasks
+
+@app.delete('/todos')
+def del_todo(credentials: DeleteTodoSchema, db: Session = Depends(get_db)):
+    user = db.query(User).filter(
+        User.email == credentials.email,
+        User.password == credentials.password
+    ).first()
+    if not user:
+        return { 'error': 'wrong email or password' }
+    task = db.query(Todo).filter(
+        Todo.id == credentials.todo_id,
+        Todo.user_id == user.id
+    ).first()
+    if not task:
+        return { 'error': 'todo not found' }
+    db.delete(task)
+    db.commit()
+    return task
+    
 
 
 
