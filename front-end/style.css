@@ -1,5 +1,23 @@
+#elem_btn{
+    display: flex;
+    gap: 20px;
+    flex-direction: row;
+}
+#new{
+    background-color: #DDEB9D;
+}
+
+#delete_task{
+    background-color: var(--delete);
+}
 main{
-    display: none;
+    display: flex;
+    flex-direction: column;
+    margin-left: 30px;
+}
+#task_name{
+    margin-right: 1500px;
+    margin-top: 35px;
 }
 header{
     text-align: center;
@@ -22,10 +40,16 @@ body{
     margin-top: 30px;
     
 }
+
+#error{
+    display: none;
+}
+
 #submit{
     margin-top: 20px;
     padding: 10px;
     cursor: pointer;
+    background-color: var(--buttons);
 }
 ::placeholder{
     color: #1A1A1A;

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from models import User, Base,Todo
@@ -43,7 +43,7 @@ class DeleteTodoSchema(BaseModel):
 def create_user(user: UserSchema, db: Session = Depends(get_db)):
     check = db.query(User).filter(user.email == User.email).first()
     if check:
-        return "Existing Email"
+        raise HTTPException(status_code=409, detail="Email already exists")
     new_user = User(email = user.email, password = user.password)
     db.add(new_user)
     db.commit()
@@ -56,7 +56,7 @@ def login(credentials: LoginSchema, db: Session = Depends(get_db)):
         credentials.email == User.email,
         credentials.password == User.password).first()
     if not check:
-        return "Wrong Email or Password"
+        raise HTTPException(status_code=400, detail="Wrong email or password")
     return check
 
 @app.post('/todos')
@@ -65,7 +65,7 @@ def add_task(todo: ToDoSchema, db: Session = Depends(get_db)):
         todo.email == User.email,
         todo.password == User.password).first()
     if not check:
-        return "ERROR"
+        raise HTTPException(status_code=400, detail="Error")
     new_todo = Todo(title = todo.title, done = False, user_id = check.id)
     db.add(new_todo)
     db.commit()
@@ -78,7 +78,7 @@ def task_done(data: TaskDoneSchema, db: Session = Depends(get_db)):
         data.email == User.email,
         data.password == User.password).first()
     if not check:
-        return "ERROR"
+        raise HTTPException(status_code=400, detail="Error")
     todo = db.query(Todo).filter(
     Todo.id == data.todo_id,
     Todo.user_id == check.id

@@ -13,10 +13,10 @@
             <p>Sign In or Log in</p>
             
             <input type="radio" id = "btn_log" name="log_opt" value="val_log">
-            <label for="val_log">Login</label><br>
+            <label for="btn_log">Login</label><br>
 
             <input type="radio" id="btn_sign" name="log_opt" value = "sign_log">
-            <label for="sign_log">Sign In</label><br>
+            <label for="btn_sign">Sign In</label><br>
 
         </form>
 
@@ -25,10 +25,23 @@
         <input id = "password" type="password" placeholder="Enter your password" class="login_in">
         <button id = "submit">Submit</button>
     </div>
+    <h1 id = "error">ERROR: Wrong Email or Password</h1>
     <main>
-        <button id = "new">New Task</button>
-        <input type = "text" id ="task_name">
-        <button id = "delete_task">Delete Task</button>
+        <div id = "elem_btn">
+            <form>
+                <p>Add or Delete</p>
+                
+                <input type="radio" id = "btn_add" name="add_opt" value="add_task">
+                <label for="btn_add">Add</label><br>
+
+                <input type="radio" id="btn_del" name="del_opt" value = "del_task">
+                <label for="btn_del">Delete</label><br>
+
+            </form>
+        </div>
+        <input type = "text" id ="task_name" placeholder="Task Name to either Delete or Add">
+        <button id = 'task_sub'>Submit</button>
+        
     </main>
     
     <script src="script.js" defer></script>
