@@ -6,7 +6,9 @@
 #new{
     background-color: #DDEB9D;
 }
-
+input{
+    color: #1A1A1A;
+}
 #task_sub{
     margin-right: 1650px;
     margin-top: 40px;
@@ -17,7 +19,7 @@
     background-color: var(--delete);
 }
 main{
-    display: flex;
+    display: none;
     flex-direction: column;
     margin-left: 30px;
 }

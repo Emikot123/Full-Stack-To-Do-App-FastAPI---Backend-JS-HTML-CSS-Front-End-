@@ -1,10 +1,19 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
-from models import User, Base,Todo
+from models import User, Base, Todo
 from pydantic import BaseModel
+import bcrypt
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 Base.metadata.create_all(bind=engine)
 
@@ -44,7 +53,10 @@ def create_user(user: UserSchema, db: Session = Depends(get_db)):
     check = db.query(User).filter(user.email == User.email).first()
     if check:
         raise HTTPException(status_code=409, detail="Email already exists")
-    new_user = User(email = user.email, password = user.password)
+    
+    hashed = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
+
+    new_user = User(email = user.email, password = hashed)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -52,12 +64,14 @@ def create_user(user: UserSchema, db: Session = Depends(get_db)):
 
 @app.post('/login')
 def login(credentials: LoginSchema, db: Session = Depends(get_db)):
-    check = db.query(User).filter(
-        credentials.email == User.email,
-        credentials.password == User.password).first()
-    if not check:
+    user = db.query(User).filter(
+        User.email == credentials.email
+    ).first()
+    if not user:
         raise HTTPException(status_code=400, detail="Wrong email or password")
-    return check
+    if not bcrypt.checkpw(credentials.password.encode('utf-8'), user.password.encode('utf-8')):
+        raise HTTPException(status_code=400, detail="Wrong email or password")
+    return user
 
 @app.post('/todos')
 def add_task(todo: ToDoSchema, db: Session = Depends(get_db)):
