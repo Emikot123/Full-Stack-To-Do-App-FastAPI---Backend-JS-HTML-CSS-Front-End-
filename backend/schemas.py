@@ -10,15 +10,15 @@ class UserSchema(BaseModel):
 
 class ToDoSchema(BaseModel):
     title: str
-    email: str
-    password: str
+    token: str
 
 class TaskDoneSchema(BaseModel):
-    email: str
-    password: str
+    token: str
     todo_id: int
 
 class DeleteTodoSchema(BaseModel):
-    email: str
-    password: str
+    token: str
     todo_id: int
+
+class GetTodosSchema(BaseModel):
+    token: str

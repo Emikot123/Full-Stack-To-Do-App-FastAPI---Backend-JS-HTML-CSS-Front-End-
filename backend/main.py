@@ -5,7 +5,8 @@ from database import SessionLocal, engine
 from models import User, Base, Todo
 from pydantic import BaseModel
 import bcrypt
-from schemas import UserSchema, LoginSchema, ToDoSchema, TaskDoneSchema, DeleteTodoSchema
+from schemas import UserSchema, LoginSchema, ToDoSchema, TaskDoneSchema, DeleteTodoSchema, GetTodosSchema
+from authentication import create_token, verify_token
 
 app = FastAPI()
 
@@ -38,10 +39,12 @@ def create_user(user: UserSchema, db: Session = Depends(get_db)):
     hashed = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
 
     new_user = User(email = user.email, password = hashed)
+    
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return new_user
+    token = create_token(new_user.id)
+    return {'token': token}
 
 @app.post('/login')
 def login(credentials: LoginSchema, db: Session = Depends(get_db)):
@@ -52,16 +55,15 @@ def login(credentials: LoginSchema, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Wrong email or password")
     if not bcrypt.checkpw(credentials.password.encode('utf-8'), user.password.encode('utf-8')):
         raise HTTPException(status_code=400, detail="Wrong email or password")
-    return user
+    token = create_token(user.id)
+    return {'token': token}
 
 @app.post('/todos')
 def add_task(todo: ToDoSchema, db: Session = Depends(get_db)):
-    check = db.query(User).filter(
-        todo.email == User.email,
-        todo.password == User.password).first()
-    if not check:
+    user_id = verify_token(todo.token)
+    if not user_id:
         raise HTTPException(status_code=400, detail="Error")
-    new_todo = Todo(title = todo.title, done = False, user_id = check.id)
+    new_todo = Todo(title = todo.title, done = False, user_id = user_id)
     db.add(new_todo)
     db.commit()
     db.refresh(new_todo)
@@ -69,14 +71,12 @@ def add_task(todo: ToDoSchema, db: Session = Depends(get_db)):
 
 @app.put('/todos/done')
 def task_done(data: TaskDoneSchema, db: Session = Depends(get_db)):
-    check = db.query(User).filter(
-        data.email == User.email,
-        data.password == User.password).first()
-    if not check:
+    user_id = verify_token(data.token)
+    if not user_id:
         raise HTTPException(status_code=400, detail="Error")
     todo = db.query(Todo).filter(
     Todo.id == data.todo_id,
-    Todo.user_id == check.id
+    Todo.user_id == user_id
     ).first()
 
     todo.done = True
@@ -86,14 +86,12 @@ def task_done(data: TaskDoneSchema, db: Session = Depends(get_db)):
 
 @app.put('/todos/undone')
 def task_false(data: TaskDoneSchema, db: Session = Depends(get_db)):
-    check = db.query(User).filter(
-        data.email == User.email,
-        data.password == User.password).first()
+    check = verify_token(data.token)
     if not check:
         return "ERROR"
     todo = db.query(Todo).filter(
     Todo.id == data.todo_id,
-    Todo.user_id == check.id
+    Todo.user_id == check
     ).first()
 
     todo.done = False
@@ -104,38 +102,28 @@ def task_false(data: TaskDoneSchema, db: Session = Depends(get_db)):
 #View
 
 @app.post('/todos/get')
-def get_todos(credentials: LoginSchema, db: Session = Depends(get_db)):
-    user = db.query(User).filter(
-        User.email == credentials.email,
-        User.password == credentials.password
-    ).first()
+def get_todos(credentials: GetTodosSchema, db: Session = Depends(get_db)):
+    user = verify_token(credentials.token)
     if not user:
         return "Wrong Email or Password"
-    return db.query(Todo).filter(Todo.user_id == user.id).all()
+    return db.query(Todo).filter(Todo.user_id == user).all()
 
 
 #Delete Tasks
 
 @app.delete('/todos')
 def del_todo(credentials: DeleteTodoSchema, db: Session = Depends(get_db)):
-    user = db.query(User).filter(
-        User.email == credentials.email,
-        User.password == credentials.password
-    ).first()
+    user = verify_token(credentials.token)
     if not user:
         return { 'error': 'wrong email or password' }
     task = db.query(Todo).filter(
         Todo.id == credentials.todo_id,
-        Todo.user_id == user.id
+        Todo.user_id == user
     ).first()
     if not task:
         return { 'error': 'todo not found' }
     db.delete(task)
     db.commit()
     return task
-    
-
-
-
     
 
