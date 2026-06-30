@@ -5,7 +5,7 @@ from database import SessionLocal, engine
 from models import User, Base, Todo
 from pydantic import BaseModel
 import bcrypt
-from schemas import UserSchema, LoginSchema, ToDoSchema, GetTodosSchema, TaskDoneSchema, DeleteTodoSchema
+from schemas import UserSchema, LoginSchema, ToDoSchema, TaskDoneSchema, DeleteTodoSchema
 
 app = FastAPI()
 
@@ -24,6 +24,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 
 #Creating and Updating
