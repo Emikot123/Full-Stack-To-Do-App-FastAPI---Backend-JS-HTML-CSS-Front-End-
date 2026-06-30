@@ -22,3 +22,11 @@ class DeleteTodoSchema(BaseModel):
 
 class GetTodosSchema(BaseModel):
     token: str
+
+
+class UserResponse(BaseModel):
+    user_id: int
+    email: str
+
+    class Config:
+        from_attributes = True
