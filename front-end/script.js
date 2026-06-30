@@ -1,11 +1,10 @@
 const BASE_URL = 'http://localhost:8000'
 
-// MISTAKE: user_email and user_password were defined inside the login onclick
-// so the task submit button couldn't access them — moved to top level
+
 var user_email = ''
 var user_password = ''
 
-// login / register button
+
 document.getElementById("submit").onclick = async function(){
     user_email = document.getElementById("email").value
     user_password = document.getElementById("password").value
@@ -15,7 +14,6 @@ document.getElementById("submit").onclick = async function(){
             await new_user(user_email, user_password)
         } else {
             await log_in(user_email, user_password)
-            // MISTAKE: getTodos result was not used — now we pass it to display
             var todos = await getTodos(user_email, user_password)
             displayTodos(todos)
         }
@@ -25,15 +23,12 @@ document.getElementById("submit").onclick = async function(){
     }
 }
 
-// MISTAKE: second onclick was also using "submit" id — overwrote the login one
-// changed to "task_sub" which is the correct button id
+
 document.getElementById("task_sub").onclick = async function(){
     var user_task = document.getElementById("task_name").value
     var act_cond = document.querySelector('input[name="task_opt"]:checked').value
     try {
         if (act_cond == "add_task"){
-            // MISTAKE: created head1 but then styled div which didn't exist
-            // fixed: create div, put h1 inside it, style the div
             var div = document.createElement('div')
             var head1 = document.createElement('h1')
 
@@ -62,7 +57,7 @@ document.getElementById("task_sub").onclick = async function(){
     }
 }
 
-// displays todos on the page
+
 function displayTodos(todos) {
     document.getElementById('tasks').innerHTML = ''
     todos.forEach(function(todo) {
@@ -79,7 +74,6 @@ function displayTodos(todos) {
     })
 }
 
-// MISTAKE: URL was BASE_URL + '/users' — should be '/todos'
 async function delete_task(email_arg, password_arg, id_arg) {
     try {
         var res = await fetch(BASE_URL + '/todos', {
