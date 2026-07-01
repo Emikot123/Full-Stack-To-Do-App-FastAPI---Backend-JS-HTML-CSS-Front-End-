@@ -5,7 +5,7 @@ from database import SessionLocal, engine
 from models import User, Base, Todo
 from pydantic import BaseModel
 import bcrypt
-from schemas import UserSchema, LoginSchema, ToDoSchema, TaskDoneSchema, DeleteTodoSchema, GetTodosSchema
+from schemas import UserResponse, UserSchema, LoginSchema, ToDoSchema, TaskDoneSchema, DeleteTodoSchema, GetTodosSchema
 from authentication import create_token, verify_token
 
 app = FastAPI()
@@ -88,7 +88,7 @@ def task_done(data: TaskDoneSchema, db: Session = Depends(get_db)):
 def task_false(data: TaskDoneSchema, db: Session = Depends(get_db)):
     check = verify_token(data.token)
     if not check:
-        return "ERROR"
+        raise HTTPException(status_code=400, detail= 'ERROR')
     todo = db.query(Todo).filter(
     Todo.id == data.todo_id,
     Todo.user_id == check
@@ -105,8 +105,17 @@ def task_false(data: TaskDoneSchema, db: Session = Depends(get_db)):
 def get_todos(credentials: GetTodosSchema, db: Session = Depends(get_db)):
     user = verify_token(credentials.token)
     if not user:
-        return "Wrong Email or Password"
+        raise HTTPException(status_code=400, detail= 'ERROR')
     return db.query(Todo).filter(Todo.user_id == user).all()
+
+
+@app.get('/users/{user_id}', response_model=UserResponse)
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
 
 
 #Delete Tasks
@@ -115,7 +124,7 @@ def get_todos(credentials: GetTodosSchema, db: Session = Depends(get_db)):
 def del_todo(credentials: DeleteTodoSchema, db: Session = Depends(get_db)):
     user = verify_token(credentials.token)
     if not user:
-        return { 'error': 'wrong email or password' }
+        raise HTTPException(status_code=400, detail= 'ERROR')
     task = db.query(Todo).filter(
         Todo.id == credentials.todo_id,
         Todo.user_id == user

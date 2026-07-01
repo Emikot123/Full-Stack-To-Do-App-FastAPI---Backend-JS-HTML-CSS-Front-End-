@@ -25,7 +25,7 @@ class GetTodosSchema(BaseModel):
 
 
 class UserResponse(BaseModel):
-    user_id: int
+    id: int
     email: str
 
     class Config:
